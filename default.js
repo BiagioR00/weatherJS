@@ -1,9 +1,10 @@
 const container = document.getElementById("container")
 const apikey = "d52e60f0122d053890dd0bff42b37e59";
 
+
 const city = prompt("City?");
 
-async function coordinates() {
+async function coordinates(city) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
   const request = new Request(url);
 
@@ -25,7 +26,7 @@ async function coordinates() {
 }
 
 async function weatherFetch() {
-  const coordinate = await coordinates();
+  const coordinate = await coordinates(city);
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinate[0]}&lon=${coordinate[1]}&appid=${apikey}`;
   const request = new Request(url);
 
@@ -44,13 +45,45 @@ async function weatherFetch() {
 }
 
 
+async function weatherImageFetch() {
+    try {
+        const weatherInformations = await weatherFetch();
+        const weatherMain = weatherInformations.weather[0].main;
 
+        const urlImage = `https://api.giphy.com/v1/gifs/search?q=${weatherMain}&api_key=X8vLFkYNAzvPfgraHMYs6MtDQVn7NTl1&limit=5`;
 
-// ...
+        const response = await fetch(urlImage);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const imageData = await response.json();
+
+        if (!imageData.data || imageData.data.length === 0) {
+            throw new Error("No image data found");
+        }
+
+        const imageUrl = imageData.data[0].images.original.url;
+
+        return imageUrl;
+    } catch (error) {
+        console.error("Error fetching image data:", error);
+        throw error; 
+    }
+}
+
 
 async function displayInformations() {
     try {
         const weatherInformations = await weatherFetch();
+        const weatherImage = await weatherImageFetch();
+
+        container.innerHTML = '';
+
+        const loadingMessage = document.createElement("p");
+        loadingMessage.textContent = "Loading weather information...";
+        container.appendChild(loadingMessage);
 
         const divCity = document.createElement("div");
         const cityName = document.createElement("p");
@@ -65,6 +98,9 @@ async function displayInformations() {
         const weatherGroup = document.createElement("p");
         const weatherDescription = document.createElement("p");
         const temperature = document.createElement("p");
+        const image = document.createElement("img");
+        image.src = weatherImage;
+        image.alt = "Weather Image";
 
         weatherGroup.textContent = `Weather Group: ${weatherInformations.weather[0].main}`;
         weatherDescription.textContent = `Description: ${weatherInformations.weather[0].description}`;
@@ -73,7 +109,9 @@ async function displayInformations() {
         divConditions.appendChild(weatherGroup);
         divConditions.appendChild(weatherDescription);
         divConditions.appendChild(temperature);
+        divConditions.appendChild(image);
 
+        container.innerHTML = '';
         container.appendChild(divCity);
         container.appendChild(divConditions);
     } catch (error) {
