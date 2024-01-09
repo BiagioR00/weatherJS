@@ -1,11 +1,12 @@
 const container = document.getElementById("container")
-const apikey = "";
+const apiKeyWeather = "";
+const apiKeyImage = "";
 
 
 const city = prompt("City?");
 
 async function coordinates(city) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKeyWeather}`;
   const request = new Request(url);
 
   try {
@@ -27,7 +28,7 @@ async function coordinates(city) {
 
 async function weatherFetch() {
   const coordinate = await coordinates(city);
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinate[0]}&lon=${coordinate[1]}&appid=${apikey}`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinate[0]}&lon=${coordinate[1]}&appid=${apiKeyWeather}`;
   const request = new Request(url);
 
   try {
@@ -50,7 +51,7 @@ async function weatherImageFetch() {
         const weatherInformations = await weatherFetch();
         const weatherMain = weatherInformations.weather[0].main;
 
-        const urlImage = `https://api.giphy.com/v1/gifs/search?q=${weatherMain}&api_key=X8vLFkYNAzvPfgraHMYs6MtDQVn7NTl1&limit=5`;
+        const urlImage = `https://api.giphy.com/v1/gifs/search?q=${weatherMain}&api_key=${apiKeyImage}&limit=1`;
 
         const response = await fetch(urlImage);
 
