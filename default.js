@@ -1,5 +1,5 @@
 const container = document.getElementById("container")
-const apikey = "d52e60f0122d053890dd0bff42b37e59";
+const apikey = "";
 
 
 const city = prompt("City?");
